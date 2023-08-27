@@ -1,55 +1,56 @@
-# Описание выполненных заданий
+# Infrastructure Setup
+Olexasha Infrastructure Repository
 
-## Настройка окружения виртуалок
-- Создал и настроил 2 ВМ;
-- Создал пару ключей;
-- Данные IP виртуалок:
-bastion_IP = 158.160.96.166
-someinternalhost_IP = 10.128.0.33
+Описание моей работы:
 
-## Настройка SSH для bastion сервера
-- Подключился к bastion host через SSH используя ключи: `ssh-keygen -t rsa -f ~/.ssh/hw3_user1 -C hw3_user1 -P ""` и `ssh -i ~/.ssh/hw3_user1 hw3_user1@158.160.96.166`.
-- Настроил SSH форвандинг на someinternalhost.
+## Task 5: Bastion HTTPS хост с VPN через PritUNL
+Для подключения одной строкой:
 
-## Использование Bastion host для сквозного подключения к someinternalhost
-- Добавил приватный ключ удалённого хоста в кэш SSH-агента.
-- Подключился к веб-серверу `ssh -i ~/.ssh/hw3_user1 -A kek_user_ycloud@158.160.96.166`.
-- Подключился к удалённому серверу `ssh hw3_user2@10.128.0.23`.
+    ssh -A someinternalhost@10.128.0.33 -J appuser@158.160.96.166
 
-## Самостоятельное задание №1
-- Исследовал способ подключения к someinternalhost в одну команду из моего локального хоста. Проверил работоспособность найденного решения и внёс его в README.md в этой репе:
-1. Добавляем приватный ключ bastion в кэш SSH-агента `ssh-add hw3_user1`;
-2. Используем опцию ProxyCommand в команде SSH `ssh -A -J hw3_user1@51.250.77.251 hw3_user2@10.128.0.33`:
-```
-Пояснения:
-- `-A` - включаем SSH Forwarding для передачи аутентификационных ключей;
-- `-J` - используем Jump Host (промежуточный хост) для доступа к машине из внутренней сети;
-- `hw3_user1@158.160.96.166` - это удаленный хост (Jump Host), через который будет происходить SSH Forwarding и доступ к `someinternalhost`;
-- `someinternaluser@10.128.0.33` - это целевой хост, к которому вы хотите подключиться.
-```
-## Дополнительное задание №1
-- Предложил вариант решения для подключения из консоли при помощи команды вроде `ssh someinternalhost`. Внёс решение в README.md:
-1. Добавляем приватный ключ bastion в кэш SSH-агента `ssh-add hw3_user1`;
-2. Чтобы подключаться к удаленной машине `someinternalhost` через алиас `someinternalhost`, нужно добавить запись в файл `~/.ssh/config` на нашем локальном устройстве;
-3. Добавляем следующие строки:
-```
-Host someinternalhost
-    HostName 10.128.0.33
-    User hw3_user2
-    ProxyCommand ssh -A hw3_user1@158.160.96.166 -W %h:%p
-Здесь:
-- `Host someinternalhost` — это ваш алиас для `someinternalhost`, который будет использоваться при подключении;
-- `HostName 10.128.0.33` — это IP-адрес машины `someinternalhost`;
-- `User hw3_user2` — это имя пользователя, с которым хотим подключиться к машине `someinternalhost`;
-- `ProxyCommand ssh -A hw3_user1@158.160.96.166 -W %h:%p` — это команда, которая указывает, что мы хотим использовать `bastion` как промежуточный хост для подключения к `someinternalhost`.
-```
-Теперь можем подключаться к `someinternalhost` через алиас `someinternalhost`, используя команду `ssh someinternalhost` в терминале. SSH автоматически определит, что `someinternalhost` соответствует настройке в файле `~/.ssh/config` и выполнит подключение через промежуточный хост `bastion`.
+где:
+* someinternalhost — пользователь конечной машины,
+* 10.128.0.33 — IP конечной машины
+* appuser — пользователь на бастионхосте,
+* 158.160.96.166 — внешний IP бастионхоста
 
-## Создание и настройка VPN-сервера на PritUNL
-- Создал и настроил VPN-сервер на PritUNL.
+Для подключения короткой командой сделаем конфигфайл:
 
-## Настройка подключения к VPN серверу как его пользователь (доступ к someinternalhost)
-- В корне репы прикрепил конфиг пользователя.
+    > cat .\.ssh\config
+    Host someinternalhost
+        User someinternaluser
+        HostName 10.128.0.33
+        ProxyJump kek_user_ycloud@158.160.96.166
+    > ssh myinternalhost
+    someinternalhost@someinternalhost:~$
 
-## Дополнительное задание №2
-- Задание со звёздочкой выполнил, используя доменное имя (попросил у приятеля из нашей группы :) ). Использовал его в настройках VPN PritUNL в настройках.
+Домен был также добавлен, а также включено HTTPS шифрование в PritUNL.
+
+* bastion_IP = 158.160.96.166
+* someinternalhost_IP = 10.128.0.33
+
+
+## Task 6: Авто деплой инстанса с окружением на YCloud
+
+Команда для старта с метадатой (находясь в директории репы):
+
+    >  yc compute instance create \
+    >>   --name keka-reddit \
+    >>   --hostname keka-reddit \
+    >>   --memory=4 \
+    >>   --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1604-lts,size=10GB \
+    >>   --network-interface subnet-name=kek-network-1-ru-central1-a,nat-ip-version=ipv4 \
+    >>   --metadata-from-file user-data=cloud_config.yml
+    done (31s)
+    ...
+    fqdn: kek-reddit.ru-central1.internal
+    scheduling_policy: {}
+    network_settings:
+      type: STANDARD
+    placement_policy: {}
+
+testapp_IP = 51.250.77.58
+testapp_port = 9292
+
+* testapp_internal_IP = 10.128.0.3
+* testapp_URI = http://51.250.93.32:9292/
