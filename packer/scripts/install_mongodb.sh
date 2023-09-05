@@ -1,17 +1,17 @@
 #!/bin/sh
 
 # Добавляем репозиторий монги в сурсы
-wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.2.list
 
 # Обновляем ссылки и устанавливаем mongodb
-sudo apt update
-sudo apt install -y mongodb-org
+apt update
+apt install -y mongodb-org
 
 # Запускаем сервис и добавляем его в автозапуск
-sudo systemctl start mongod
-sudo systemctl enable --now mongod
-STATUS=$(sudo systemctl status mongod)
+systemctl start mongod
+systemctl enable --now mongod
+STATUS=$(systemctl status mongod)
 
 # Проверяем, что сервис активен и добавлен в автозапуск ОС
 # shellcheck disable=SC2039
