@@ -1,2 +1,3 @@
 .idea/
 /play-travis/.pytest_cache/
+package/variables.pkr.hcl
