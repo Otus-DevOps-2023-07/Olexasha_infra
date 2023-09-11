@@ -1,3 +1,8 @@
 .idea/
 /play-travis/.pytest_cache/
 package/variables.pkr.hcl
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
