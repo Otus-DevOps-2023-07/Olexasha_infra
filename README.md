@@ -3,7 +3,7 @@ Olexasha Infrastructure Repository
 
 Описание моей работы:
 
-## Task 5: Bastion HTTPS хост с VPN через PritUNL
+## Task 3: Bastion HTTPS хост с VPN через PritUNL
 Для подключения одной строкой:
 ```zsh
 ssh -A someinternalhost@10.128.0.33 -J appuser@158.160.96.166
@@ -30,7 +30,7 @@ someinternalhost@someinternalhost:~$
 * someinternalhost_IP = 10.128.0.33
 
 
-## Task 6: Авто деплой инстанса с окружением на YCloud
+## Task 4: Авто деплой инстанса с окружением на YCloud
 
 Команда для старта с метадатой (находясь в директории репы):
 ```zsh
@@ -55,7 +55,7 @@ testapp_port = 9292
 
 * testapp_internal_IP = 10.128.0.3
 * testapp_URI = http://51.250.93.32:9292/
-## Task 7: Автогенерация образов с помощью Packer
+## Task 5: Автогенерация образов с помощью Packer
 Команда для генерации Immutable (bake) образа (находясь в директории репы):
 ```zsh
 >>> packer build ./packer/immutable.pkr.hcl
@@ -113,7 +113,7 @@ placement_policy: {}
 | fhm910gk4h10vq01bk9e | reddit-kek | ru-central1-a | RUNNING | 51.250.73.43 | 10.128.0.10 |
 +----------------------+------------+---------------+---------+--------------+-------------+
 ```
-## Task 8: Создание VPC инстансов с помощью Terraform
+## Task 6: Создание VPC инстансов с помощью Terraform
 - Выполнил основные задания;
 - Выполнил 1ое задание со `*`;
 - Выполнил 2ое задание со `*`.
