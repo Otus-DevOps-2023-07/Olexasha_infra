@@ -113,3 +113,48 @@ placement_policy: {}
 | fhm910gk4h10vq01bk9e | reddit-kek | ru-central1-a | RUNNING | 51.250.73.43 | 10.128.0.10 |
 +----------------------+------------+---------------+---------+--------------+-------------+
 ```
+## Task 8: Создание VPC инстансов с помощью Terraform
+- Выполнил основные задания;
+- Выполнил 1ое задание со `*`;
+- Выполнил 2ое задание со `*`.
+
+```zsh
+>>> terraform version
+Terraform v1.5.6
+on darwin_arm64
+
+Your version of Terraform is out of date! The latest version
+is 1.5.7. You can update by downloading from https://www.terraform.io/downloads.html
+```
+
+Чтобы проверить сделанное, необходимо:
+1. Выполнить:
+```zsh
+>>> cd ./terraform && terraform validate
+Success! The configuration is valid.
+```
+2. Выполнить:
+```zsh
+>>> terraform apply -auto-approve
+...
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = [
+  "62.84.127.111",
+  "62.84.125.92",
+]
+external_ip_address_lb = tolist([
+  "84.201.142.34",
+])
+```
+2. Обратиться на http://84.201.142.34:80/ и убедиться, что страница открывается.
+3. Зайти по ssh на 1ю ВМ:
+```zsh
+>>> ssh -i .ssh/yc ubuntu@62.84.127.111
+ubuntu@fhmg56cuiek04otqmim0:~$ sudo systemctl stop puma
+```
+, проверить, что сервис отключен.
+4. Обратиться на http://84.201.142.34:80/ и убедиться, что страница всё ещё открывается.
+5. Потом зайти на 2ю ВМ, так же отключить puma.service и на http://84.201.142.34:80/ и убедиться, что страница уже недоступна.
